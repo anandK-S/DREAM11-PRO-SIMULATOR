@@ -1,6 +1,4 @@
 streamlit
-flask
-flask-socketio
 pandas
+plotly
 numpy
-xgboost
