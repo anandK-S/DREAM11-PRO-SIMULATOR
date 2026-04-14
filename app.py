@@ -5,7 +5,6 @@ import streamlit.components.v1 as components
 st.set_page_config(page_title="Dream11 Pro Simulator", layout="wide", initial_sidebar_state="collapsed")
 
 # 1. FIX TOP SPACING & REMOVE STREAMLIT DEFAULT UI
-# Ye CSS Streamlit ke top margin aur padding ko zero kar degi
 remove_st_spacing = """
 <style>
     /* Remove top padding and max-width */
@@ -29,7 +28,7 @@ remove_st_spacing = """
 """
 st.markdown(remove_st_spacing, unsafe_allow_html=True)
 
-# 2. FULL RESPONSIVE HTML/CSS/JS CODE
+# 2. FULL RESPONSIVE HTML/CSS/JS CODE (FIXED DESKTOP HEIGHT)
 html_code = """
 <!DOCTYPE html>
 <html lang="en">
@@ -51,7 +50,7 @@ html_code = """
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: var(--bg-color); font-family: 'Roboto', sans-serif; padding: 15px; color: var(--text-main); overflow-x: hidden; }
+        body { background-color: var(--bg-color); font-family: 'Roboto', sans-serif; padding: 20px; color: var(--text-main); overflow-x: hidden; }
         h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; }
         ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 
@@ -62,16 +61,16 @@ html_code = """
         .header h1 { font-weight: 800; font-size: 24px; color: var(--d11-red); text-transform: uppercase; letter-spacing: 1px; margin: 0; }
         .match-status { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
 
-        /* --- RESPONSIVE GRID LAYOUT --- */
+        /* --- RESPONSIVE GRID LAYOUT (FIXED FOR DESKTOP) --- */
         .dashboard { 
             display: grid; 
             grid-template-columns: 300px 1fr 320px; 
             gap: 20px; 
-            height: calc(100vh - 100px); 
-            min-height: 700px;
+            /* Fixed height for Desktop to prevent bottom buttons from stretching too far down */
+            height: 720px; 
         }
         
-        .panel { background: var(--white); border-radius: 20px; padding: 20px; box-shadow: var(--shadow); overflow-y: auto; }
+        .panel { background: var(--white); border-radius: 20px; padding: 20px; box-shadow: var(--shadow); overflow-y: auto; height: 100%; }
         .panel-title { font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 15px; 
                        display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); 
                        padding-bottom: 10px;}
@@ -156,7 +155,7 @@ html_code = """
                    font-size: 8px; font-weight: 900; width: 14px; height: 14px; border-radius: 50%; 
                    display: flex; align-items: center; justify-content: center; border: 1px solid black; }
 
-        .bottom-bar { position: absolute; bottom: 0; width: 100%; background: var(--white); 
+        .bottom-bar { position: absolute; bottom: 0; left: 0; width: 100%; background: var(--white); 
                       padding: 12px; border-top: 1px solid var(--border); z-index: 10;}
         .btn-primary { width: 100%; background: #e2e8f0; color: #94a3b8; border: none; 
                        padding: 12px; border-radius: 30px; font-family: 'Outfit'; font-weight: 800; 
@@ -174,7 +173,7 @@ html_code = """
             .dashboard {
                 display: flex;
                 flex-direction: column;
-                height: auto;
+                height: auto; /* Let it expand freely on mobile */
                 gap: 15px;
             }
             .app-frame {
@@ -184,7 +183,6 @@ html_code = """
             .panel {
                 height: auto;
             }
-            /* Make radar chart smaller on mobile */
             .dv-container { height: 280px; }
             .header h1 { font-size: 20px; }
         }
@@ -609,5 +607,6 @@ html_code = """
 </html>
 """
 
-# HTML render using a very large height to accommodate vertical stacking on mobile
-components.html(html_code, height=1400, scrolling=True)
+# HTML render using a fixed height for Streamlit.
+# 1000px ensures mobile vertical stacking has room, while desktop stays locked at 720px by the internal CSS.
+components.html(html_code, height=1000, scrolling=True)
