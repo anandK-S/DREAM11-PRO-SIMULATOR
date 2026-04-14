@@ -7,7 +7,7 @@ st.set_page_config(page_title="Dream11 Pro Simulator", layout="wide", initial_si
 # 1. FIX TOP SPACING & REMOVE STREAMLIT DEFAULT UI
 remove_st_spacing = """
 <style>
-    /* Remove top padding and max-width */
+    /* Remove all padding to make it edge-to-edge */
     .block-container {
         padding-top: 0rem !important;
         padding-bottom: 0rem !important;
@@ -19,16 +19,17 @@ remove_st_spacing = """
     header {visibility: hidden;}
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    /* Remove iframe border */
+    /* Remove iframe border and hide external scrollbar */
     iframe {
         border: none !important;
         width: 100% !important;
+        overflow: hidden !important; 
     }
 </style>
 """
 st.markdown(remove_st_spacing, unsafe_allow_html=True)
 
-# 2. FULL RESPONSIVE HTML/CSS/JS CODE (FIXED DESKTOP HEIGHT)
+# 2. FULL HTML/CSS/JS CODE (LOCKED TO 1 SCREEN ON DESKTOP)
 html_code = """
 <!DOCTYPE html>
 <html lang="en">
@@ -50,34 +51,42 @@ html_code = """
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: var(--bg-color); font-family: 'Roboto', sans-serif; padding: 20px; color: var(--text-main); overflow-x: hidden; }
-        h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; }
-        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-
-        .header { 
-            background: var(--white); padding: 15px 20px; border-radius: 16px; margin-bottom: 20px; 
-            box-shadow: var(--shadow); text-align: center;
-        }
-        .header h1 { font-weight: 800; font-size: 24px; color: var(--d11-red); text-transform: uppercase; letter-spacing: 1px; margin: 0; }
-        .match-status { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
-
-        /* --- RESPONSIVE GRID LAYOUT (FIXED FOR DESKTOP) --- */
-        .dashboard { 
-            display: grid; 
-            grid-template-columns: 300px 1fr 320px; 
-            gap: 20px; 
-            /* Fixed height for Desktop to prevent bottom buttons from stretching too far down */
-            height: 720px; 
+        
+        /* DESKTOP BASE: Lock scrolling, fit to 100vh */
+        body { 
+            background-color: var(--bg-color); font-family: 'Roboto', sans-serif; 
+            padding: 10px 15px; color: var(--text-main); 
+            height: 100vh; overflow: hidden; 
         }
         
-        .panel { background: var(--white); border-radius: 20px; padding: 20px; box-shadow: var(--shadow); overflow-y: auto; height: 100%; }
-        .panel-title { font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 15px; 
+        h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; }
+        ::-webkit-scrollbar { width: 5px; } 
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        .header { 
+            background: var(--white); padding: 12px 20px; border-radius: 12px; margin-bottom: 12px; 
+            box-shadow: var(--shadow); text-align: center; height: 75px; display: flex; flex-direction: column; justify-content: center;
+        }
+        .header h1 { font-weight: 800; font-size: 22px; color: var(--d11-red); text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+        .match-status { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+
+        /* --- RESPONSIVE GRID LAYOUT (DYNAMIC REMAINING HEIGHT) --- */
+        .dashboard { 
+            display: grid; 
+            grid-template-columns: 280px 1fr 300px; 
+            gap: 15px; 
+            /* 100vh - header(75px) - padding(20px) - margin(12px) = perfectly fits without scrolling */
+            height: calc(100vh - 107px); 
+        }
+        
+        .panel { background: var(--white); border-radius: 16px; padding: 15px; box-shadow: var(--shadow); overflow-y: auto; height: 100%; }
+        .panel-title { font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 12px; 
                        display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); 
-                       padding-bottom: 10px;}
+                       padding-bottom: 8px;}
 
         /* APP FRAME */
-        .app-frame { border-radius: 24px; border: 6px solid #cbd5e1; background: var(--white); 
-                     height: 100%; position: relative; overflow: hidden; box-shadow: 0 15px 25px -5px rgba(0,0,0,0.1); }
+        .app-frame { border-radius: 20px; border: 5px solid #cbd5e1; background: var(--white); 
+                     height: 100%; position: relative; overflow: hidden; box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1); }
         .screen { width: 100%; height: 100%; position: absolute; top: 0; left: 0; 
                   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
         
@@ -85,69 +94,69 @@ html_code = """
         #screen-cvc { transform: translateX(100%); background: #f8fafc; }
         #screen-preview { transform: translateX(100%); background: #1e293b; }
 
-        .app-header { background: #0f172a; color: white; padding: 12px 15px; 
+        .app-header { background: #0f172a; color: white; padding: 10px 15px; 
                       display: flex; justify-content: space-between; align-items: center;}
-        .team-code { font-family: 'Outfit'; font-weight: 800; font-size: 16px; }
+        .team-code { font-family: 'Outfit'; font-weight: 800; font-size: 15px; }
         
         /* Auto Swap Alert */
-        .swap-alert { background: #fee2e2; border-bottom: 1px solid #fca5a5; padding: 10px 15px; 
+        .swap-alert { background: #fee2e2; border-bottom: 1px solid #fca5a5; padding: 8px 15px; 
                       display: none; align-items: center; justify-content: space-between; font-size: 12px; }
-        .btn-swap { background: var(--d11-red); color: white; border: none; padding: 6px 12px; 
-                    border-radius: 6px; cursor: pointer; font-family: 'Outfit'; font-weight: 600; font-size: 12px; }
+        .btn-swap { background: var(--d11-red); color: white; border: none; padding: 5px 10px; 
+                    border-radius: 6px; cursor: pointer; font-family: 'Outfit'; font-weight: 600; font-size: 11px; }
 
         .tabs { display: flex; border-bottom: 1px solid var(--border); }
-        .tab { flex: 1; text-align: center; padding: 10px 0; cursor: pointer; font-weight: 600; 
+        .tab { flex: 1; text-align: center; padding: 8px 0; cursor: pointer; font-weight: 600; 
                color: var(--text-muted); font-size: 13px; border-bottom: 3px solid transparent;}
         .tab.active { color: var(--d11-red); border-color: var(--d11-red); }
         
-        .player-list-area { flex: 1; overflow-y: auto; padding-bottom: 70px; }
+        .player-list-area { flex: 1; overflow-y: auto; padding-bottom: 60px; }
         
         .player-row { display: flex; justify-content: space-between; align-items: center; 
-                      padding: 12px 15px; border-bottom: 1px solid #f1f5f9; cursor: pointer; 
+                      padding: 10px 15px; border-bottom: 1px solid #f1f5f9; cursor: pointer; 
                       transition: 0.2s; position: relative; }
         .player-row:hover { background: #f8fafc; }
         .player-row.selected { background: #ecfdf5; border-left: 4px solid var(--d11-green); }
         
         .playing-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; 
-                       margin-right: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+                       margin-right: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         .playing-dot.yes { background: var(--d11-green); animation: pulse 2s infinite; }
         .playing-dot.no { background: var(--d11-red); }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
-        .p-main { display: flex; align-items: center; gap: 10px; flex: 1; }
-        .p-img { width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, var(--mi-blue), var(--csk-yellow)); 
-                 display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 12px; }
-        .p-name { font-weight: 700; font-size: 14px; font-family: 'Outfit'; }
+        .p-main { display: flex; align-items: center; gap: 8px; flex: 1; }
+        .p-img { width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(135deg, var(--mi-blue), var(--csk-yellow)); 
+                 display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 11px; }
+        .p-name { font-weight: 700; font-size: 14px; font-family: 'Outfit'; white-space: nowrap;}
         .p-sub { font-size: 10px; color: var(--text-muted); }
         
-        .btn-add { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--d11-green); 
+        .btn-add { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--d11-green); 
                    color: var(--d11-green); display: flex; justify-content: center; align-items: center; 
                    font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px; }
         .player-row.selected .btn-add { background: var(--d11-green); color: white; }
 
-        .ai-suggest { position: absolute; top: 8px; right: 12px; background: var(--d11-orange); 
-                      color: white; padding: 3px 6px; border-radius: 10px; font-size: 9px; 
+        .ai-suggest { position: absolute; top: 6px; right: 10px; background: var(--d11-orange); 
+                      color: white; padding: 2px 5px; border-radius: 8px; font-size: 9px; 
                       font-weight: 800; animation: bounce 2s infinite; }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 
-                           40% { transform: translateY(-4px); } 60% { transform: translateY(-2px); } }
+                           40% { transform: translateY(-3px); } 60% { transform: translateY(-1px); } }
 
-        .cvc-header { background: #fff8e1; color: #b45309; padding: 10px; text-align: center; 
+        .cvc-header { background: #fff8e1; color: #b45309; padding: 8px; text-align: center; 
                       font-size: 11px; font-weight: 600; }
-        .cvc-row { background: var(--white); margin: 8px 12px; padding: 12px; border-radius: 12px; 
+        .cvc-row { background: var(--white); margin: 6px 10px; padding: 10px; border-radius: 10px; 
                    border: 1px solid var(--border); display: flex; justify-content: space-between; 
                    align-items: center; cursor: pointer; transition: 0.2s; }
         .cvc-row:hover { background: #f8fafc; }
-        .circle-btn { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #cbd5e1; 
+        .circle-btn { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #cbd5e1; 
                       color: #94a3b8; font-weight: 800; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; font-size: 12px;}
         .circle-btn.c-active { background: #1e293b; border-color: #1e293b; color: #fbbf24; transform: scale(1.1); }
         .circle-btn.vc-active { background: #64748b; border-color: #64748b; color: white; transform: scale(1.1); }
 
         .cricket-pitch { flex: 1; background: linear-gradient(#4ade80 0%, #22c55e 50%, #16a34a 100%); 
-                         display: flex; flex-direction: column; justify-content: space-around; padding: 15px 0; overflow-y: auto;}
-        .pitch-role-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; padding: 5px 0; }
-        .pitch-player { text-align: center; position: relative; width: 55px; }
-        .pitch-player img { width: 38px; height: 38px; border-radius: 50%; border: 2px solid white; 
-                            box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+                         display: flex; flex-direction: column; justify-content: space-around; padding: 10px 0; overflow-y: auto;}
+        .pitch-role-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; padding: 4px 0; }
+        .pitch-player { text-align: center; position: relative; width: 50px; }
+        .pitch-player img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid white; 
+                            box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
         .pitch-player .p-name { background: rgba(0,0,0,0.8); color: white; font-size: 9px; 
                                 padding: 2px 4px; border-radius: 8px; margin-top: -6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .pitch-player .pts { color: white; font-size: 10px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
@@ -156,35 +165,28 @@ html_code = """
                    display: flex; align-items: center; justify-content: center; border: 1px solid black; }
 
         .bottom-bar { position: absolute; bottom: 0; left: 0; width: 100%; background: var(--white); 
-                      padding: 12px; border-top: 1px solid var(--border); z-index: 10;}
+                      padding: 10px; border-top: 1px solid var(--border); z-index: 10;}
         .btn-primary { width: 100%; background: #e2e8f0; color: #94a3b8; border: none; 
-                       padding: 12px; border-radius: 30px; font-family: 'Outfit'; font-weight: 800; 
-                       font-size: 14px; transition: 0.3s; cursor: not-allowed; }
-        .btn-primary.ready { background: var(--d11-green); color: white; cursor: pointer; box-shadow: 0 10px 15px rgba(16,185,129,0.3); }
+                       padding: 10px; border-radius: 30px; font-family: 'Outfit'; font-weight: 800; 
+                       font-size: 13px; transition: 0.3s; cursor: not-allowed; }
+        .btn-primary.ready { background: var(--d11-green); color: white; cursor: pointer; box-shadow: 0 8px 12px rgba(16,185,129,0.3); }
 
-        .dv-container { width: 100%; height: 240px; margin-top: 10px; }
+        .dv-container { width: 100%; height: 220px; margin-top: 5px; }
         .ai-insight-box { background: linear-gradient(135deg, #f8fafc, #e2e8f0); border: 1px solid var(--border); 
-                          padding: 12px; border-radius: 12px; margin-bottom: 12px; border-left: 4px solid #8b5cf6; }
+                          padding: 10px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid #8b5cf6; }
         .pair-suggestion { background: #ecfdf5; border: 1px solid var(--d11-green); padding: 10px; 
-                           border-radius: 10px; margin-top: 10px; font-size: 12px; }
+                           border-radius: 8px; margin-top: 8px; font-size: 11px; }
 
-        /* --- MOBILE VIEW CSS --- */
+        /* --- MOBILE VIEW CSS: Override locks to allow natural scrolling --- */
         @media (max-width: 992px) {
+            body { height: auto; overflow-y: auto; overflow-x: hidden; }
             .dashboard {
-                display: flex;
-                flex-direction: column;
-                height: auto; /* Let it expand freely on mobile */
-                gap: 15px;
+                display: flex; flex-direction: column; height: auto; gap: 15px;
             }
-            .app-frame {
-                height: 650px; /* Specific height for mobile phone feel */
-                border-width: 4px;
-            }
-            .panel {
-                height: auto;
-            }
-            .dv-container { height: 280px; }
-            .header h1 { font-size: 20px; }
+            .app-frame { height: 600px; border-width: 4px; }
+            .panel { height: auto; }
+            .dv-container { height: 250px; }
+            .header h1 { font-size: 18px; }
         }
     </style>
 </head>
@@ -196,16 +198,16 @@ html_code = """
 
     <div class="dashboard">
         <div class="panel">
-            <div class="panel-title"><i class="fas fa-layer-group" style="color: var(--d11-red)"></i> Match Intelligence</div>
-            <div style="background: #fffbeb; border: 1px solid #fde68a; padding: 12px; border-radius: 12px; margin-bottom: 15px;">
-                <div id="pitchText" style="font-size: 12px; color: #92400e; font-weight: 500;">Loading Pitch Report...</div>
+            <div class="panel-title"><i class="fas fa-layer-group" style="color: var(--d11-red)"></i> Match Intel</div>
+            <div style="background: #fffbeb; border: 1px solid #fde68a; padding: 10px; border-radius: 10px; margin-bottom: 15px;">
+                <div id="pitchText" style="font-size: 11px; color: #92400e; font-weight: 500;">Loading Pitch Report...</div>
             </div>
             <div class="panel-title"><i class="fas fa-bullhorn" style="color: var(--d11-orange)"></i> Live Updates</div>
-            <button onclick="announceLineups()" style="width:100%; padding: 12px; background: linear-gradient(135deg, var(--d11-orange), #ea580c); 
-                              color: white; border:none; border-radius:12px; cursor:pointer; font-weight:700; margin-bottom:10px; font-size: 13px;">
+            <button onclick="announceLineups()" style="width:100%; padding: 10px; background: linear-gradient(135deg, var(--d11-orange), #ea580c); 
+                              color: white; border:none; border-radius:10px; cursor:pointer; font-weight:700; margin-bottom:8px; font-size: 12px;">
                 <i class="fas fa-sync-alt"></i> ANNOUNCE LINEUPS
             </button>
-            <div id="lineupStatus" style="font-size:11px; color:var(--text-muted); text-align:center;">Click to simulate 7:00 PM toss & playing XI</div>
+            <div id="lineupStatus" style="font-size:10px; color:var(--text-muted); text-align:center;">Click to simulate toss & playing XI</div>
         </div>
 
         <div class="panel" style="padding: 0; background: transparent; box-shadow: none;">
@@ -213,7 +215,7 @@ html_code = """
                 <div id="screen-builder" class="screen">
                     <div class="app-header">
                         <div class="team-code">MI vs CSK • 100 Cr</div>
-                        <div style="font-size: 11px; color: #94a3b8;">Max 10/Team</div>
+                        <div style="font-size: 10px; color: #94a3b8;">Max 10/Team</div>
                     </div>
                     
                     <div class="swap-alert" id="swapAlert">
@@ -222,13 +224,13 @@ html_code = """
                         <button class="btn-swap" onclick="autoSwapAI()"><i class="fas fa-magic"></i> AI Fix</button>
                     </div>
 
-                    <div style="padding: 12px 15px; background: #f8fafc; display: flex; justify-content: space-between; 
+                    <div style="padding: 10px 15px; background: #f8fafc; display: flex; justify-content: space-between; 
                                 border-bottom: 1px solid var(--border);">
-                        <div><div style="font-size: 20px; font-family: 'Outfit'; font-weight: 900;" id="playerCount">0/11</div>
-                             <div style="font-size: 10px; font-weight: bold; color: var(--text-muted);">PLAYERS</div></div>
+                        <div><div style="font-size: 18px; font-family: 'Outfit'; font-weight: 900;" id="playerCount">0/11</div>
+                             <div style="font-size: 9px; font-weight: bold; color: var(--text-muted);">PLAYERS</div></div>
                         <div style="text-align: right;">
-                            <div style="font-size: 20px; font-family: 'Outfit'; font-weight: 900;" id="creditCount">100.0</div>
-                            <div style="font-size: 10px; font-weight: bold; color: var(--text-muted);">CREDITS LEFT</div></div>
+                            <div style="font-size: 18px; font-family: 'Outfit'; font-weight: 900;" id="creditCount">100.0</div>
+                            <div style="font-size: 9px; font-weight: bold; color: var(--text-muted);">CREDITS LEFT</div></div>
                     </div>
                     
                     <div class="tabs">
@@ -263,89 +265,51 @@ html_code = """
                         <div class="team-code">Final Preview</div>
                     </div>
                     <div class="cricket-pitch" id="pitchPreview"></div>
-                    <div style="background: rgba(15,23,42,0.95); color: white; text-align: center; padding: 15px; 
+                    <div style="background: rgba(15,23,42,0.95); color: white; text-align: center; padding: 12px; 
                                 font-family: 'Outfit'; font-weight: 800; border-top: 2px solid var(--d11-gold);">
-                        AI PROJECTED: <span style="color:var(--d11-green); font-size:20px;" id="totalPoints">0</span> PTS
-                        <br><span style="font-size:11px; opacity:0.9;">Top 1% Grand League Potential</span>
+                        AI PROJECTED: <span style="color:var(--d11-green); font-size:18px;" id="totalPoints">0</span> PTS
+                        <br><span style="font-size:10px; opacity:0.9;">Top 1% Grand League Potential</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="panel">
-            <div class="panel-title"><i class="fas fa-brain" style="color: #8b5cf6;"></i> AI Match Predictor</div>
+            <div class="panel-title"><i class="fas fa-brain" style="color: #8b5cf6;"></i> AI Predictor</div>
             <div id="aiPanel">
-                <div style="text-align: center; color: var(--text-muted); margin-top: 40px; font-size: 13px;">
-                    <i class="fas fa-robot fa-2x" style="margin-bottom: 12px; color: #cbd5e1;"></i>
-                    <div style="font-family: 'Outfit'; font-weight: 700;">Select players for AI analysis</div>
-                    <div style="font-size: 11px; margin-top: 5px;">Pair synergy • Floor/Ceiling</div>
+                <div style="text-align: center; color: var(--text-muted); margin-top: 30px; font-size: 12px;">
+                    <i class="fas fa-robot fa-2x" style="margin-bottom: 10px; color: #cbd5e1;"></i>
+                    <div style="font-family: 'Outfit'; font-weight: 700;">Select players for analysis</div>
+                    <div style="font-size: 10px; margin-top: 4px;">Pair synergy • Floor/Ceiling</div>
                 </div>
             </div>
-            <div id="aiSuggestions" style="display: none; margin-top: 15px;"></div>
+            <div id="aiSuggestions" style="display: none; margin-top: 10px;"></div>
         </div>
     </div>
 
     <script>
         const allPlayersData = [
-            // MI - WicketKeepers
-            {id:1, name:'Ishan Kishan', role:'WK', team:'MI', credits:8.5, points:420, sel:'68%', is_playing:true, 
-             radar:[78,82,68,72,85], floor:45, ceil:120, pair_suggest:['Rohit Sharma', 'Suryakumar Yadav'], ml_score:84},
-            {id:2, name:'Tilak Varma', role:'WK', team:'MI', credits:7.5, points:320, sel:'42%', is_playing:false, 
-             radar:[65,70,62,58,72], floor:30, ceil:95, pair_suggest:['Rohit Sharma'], ml_score:72},
-            
-            // MI - Batsmen
-            {id:3, name:'Rohit Sharma', role:'BAT', team:'MI', credits:9.5, points:780, sel:'92%', is_playing:true, 
-             radar:[88,92,82,85,90], floor:65, ceil:160, pair_suggest:['Suryakumar Yadav', 'Ishan Kishan'], ml_score:91},
-            {id:4, name:'Suryakumar Yadav', role:'BAT', team:'MI', credits:9.0, points:720, sel:'88%', is_playing:true, 
-             radar:[92,88,95,78,88], floor:70, ceil:155, pair_suggest:['Rohit Sharma', 'Tilak Varma'], ml_score:89},
-            {id:5, name:'Tilak Varma', role:'BAT', team:'MI', credits:8.0, points:450, sel:'75%', is_playing:true, 
-             radar:[75,78,72,68,80], floor:40, ceil:110, pair_suggest:['Suryakumar Yadav'], ml_score:78},
-            {id:6, name:'Nehal Wadhera', role:'BAT', team:'MI', credits:7.0, points:280, sel:'35%', is_playing:false, 
-             radar:[62,65,58,55,68], floor:25, ceil:85, pair_suggest:[], ml_score:65},
-            
-            // MI - All Rounders  
-            {id:7, name:'Hardik Pandya', role:'AR', team:'MI', credits:9.0, points:650, sel:'85%', is_playing:true, 
-             radar:[82,85,88,80,82], floor:55, ceil:140, pair_suggest:['Jasprit Bumrah'], ml_score:87},
-            {id:8, name:'Romario Shepherd', role:'AR', team:'MI', credits:7.5, points:380, sel:'45%', is_playing:true, 
-             radar:[70,72,75,65,75], floor:35, ceil:100, pair_suggest:['Hardik Pandya'], ml_score:74},
-            
-            // MI - Bowlers
-            {id:9, name:'Jasprit Bumrah', role:'BOWL', team:'MI', credits:9.5, points:850, sel:'95%', is_playing:true, 
-             radar:[95,88,98,92,94], floor:75, ceil:170, pair_suggest:['Rohit Sharma', 'Hardik Pandya'], ml_score:95},
-            {id:10, name:'Gerald Coetzee', role:'BOWL', team:'MI', credits:8.0, points:480, sel:'65%', is_playing:true, 
-             radar:[78,75,85,78,80], floor:45, ceil:115, pair_suggest:['Jasprit Bumrah'], ml_score:81},
-            {id:11, name:'Piyush Chawla', role:'BOWL', team:'MI', credits:7.5, points:350, sel:'52%', is_playing:false, 
-             radar:[68,70,72,65,70], floor:30, ceil:90, pair_suggest:[], ml_score:69},
-            
-            // CSK - WicketKeepers
-            {id:12, name:'MS Dhoni', role:'WK', team:'CSK', credits:8.0, points:380, sel:'78%', is_playing:true, 
-             radar:[72,85,55,68,92], floor:40, ceil:105, pair_suggest:['Ravindra Jadeja'], ml_score:80},
-            {id:13, name:'Devon Conway', role:'WK', team:'CSK', credits:8.5, points:520, sel:'72%', is_playing:true, 
-             radar:[80,78,75,72,82], floor:50, ceil:125, pair_suggest:['Ruturaj Gaikwad'], ml_score:83},
-            
-            // CSK - Batsmen
-            {id:14, name:'Ruturaj Gaikwad', role:'BAT', team:'CSK', credits:9.0, points:680, sel:'87%', is_playing:true, 
-             radar:[85,82,88,80,85], floor:60, ceil:145, pair_suggest:['Ravindra Jadeja', 'Devon Conway'], ml_score:88},
-            {id:15, name:'Shivam Dube', role:'BAT', team:'CSK', credits:8.5, points:580, sel:'80%', is_playing:true, 
-             radar:[82,88,85,75,82], floor:55, ceil:135, pair_suggest:['Ravindra Jadeja'], ml_score:85},
-            {id:16, name:'Rajat Patidar', role:'BAT', team:'CSK', credits:7.5, points:420, sel:'58%', is_playing:false, 
-             radar:[70,72,68,62,75], floor:35, ceil:100, pair_suggest:[], ml_score:73},
-            
-            // CSK - All Rounders
-            {id:17, name:'Ravindra Jadeja', role:'AR', team:'CSK', credits:9.0, points:780, sel:'93%', is_playing:true, 
-             radar:[90,88,92,88,90], floor:70, ceil:160, pair_suggest:['Ruturaj Gaikwad', 'MS Dhoni'], ml_score:93},
-            {id:18, name:'Moeen Ali', role:'AR', team:'CSK', credits:8.0, points:450, sel:'62%', is_playing:true, 
-             radar:[75,78,72,70,78], floor:40, ceil:110, pair_suggest:['Ravindra Jadeja'], ml_score:77},
-            
-            // CSK - Bowlers
-            {id:19, name:'Matheesha Pathirana', role:'BOWL', team:'CSK', credits:8.5, points:690, sel:'82%', is_playing:true, 
-             radar:[88,75,95,85,82], floor:60, ceil:145, pair_suggest:['Ravindra Jadeja'], ml_score:86},
-            {id:20, name:'Deepak Chahar', role:'BOWL', team:'CSK', credits:8.0, points:480, sel:'68%', is_playing:true, 
-             radar:[78,72,82,78,80], floor:45, ceil:115, pair_suggest:[], ml_score:79},
-            {id:21, name:'Tushar Deshpande', role:'BOWL', team:'CSK', credits:7.5, points:380, sel:'55%', is_playing:false, 
-             radar:[68,65,75,70,72], floor:35, ceil:95, pair_suggest:[], ml_score:71},
-            
-            // EXTRA PLAYERS
+            {id:1, name:'Ishan Kishan', role:'WK', team:'MI', credits:8.5, points:420, sel:'68%', is_playing:true, radar:[78,82,68,72,85], floor:45, ceil:120, pair_suggest:['Rohit Sharma', 'Suryakumar Yadav'], ml_score:84},
+            {id:2, name:'Tilak Varma', role:'WK', team:'MI', credits:7.5, points:320, sel:'42%', is_playing:false, radar:[65,70,62,58,72], floor:30, ceil:95, pair_suggest:['Rohit Sharma'], ml_score:72},
+            {id:3, name:'Rohit Sharma', role:'BAT', team:'MI', credits:9.5, points:780, sel:'92%', is_playing:true, radar:[88,92,82,85,90], floor:65, ceil:160, pair_suggest:['Suryakumar Yadav', 'Ishan Kishan'], ml_score:91},
+            {id:4, name:'Suryakumar Yadav', role:'BAT', team:'MI', credits:9.0, points:720, sel:'88%', is_playing:true, radar:[92,88,95,78,88], floor:70, ceil:155, pair_suggest:['Rohit Sharma', 'Tilak Varma'], ml_score:89},
+            {id:5, name:'Tilak Varma', role:'BAT', team:'MI', credits:8.0, points:450, sel:'75%', is_playing:true, radar:[75,78,72,68,80], floor:40, ceil:110, pair_suggest:['Suryakumar Yadav'], ml_score:78},
+            {id:6, name:'Nehal Wadhera', role:'BAT', team:'MI', credits:7.0, points:280, sel:'35%', is_playing:false, radar:[62,65,58,55,68], floor:25, ceil:85, pair_suggest:[], ml_score:65},
+            {id:7, name:'Hardik Pandya', role:'AR', team:'MI', credits:9.0, points:650, sel:'85%', is_playing:true, radar:[82,85,88,80,82], floor:55, ceil:140, pair_suggest:['Jasprit Bumrah'], ml_score:87},
+            {id:8, name:'Romario Shepherd', role:'AR', team:'MI', credits:7.5, points:380, sel:'45%', is_playing:true, radar:[70,72,75,65,75], floor:35, ceil:100, pair_suggest:['Hardik Pandya'], ml_score:74},
+            {id:9, name:'Jasprit Bumrah', role:'BOWL', team:'MI', credits:9.5, points:850, sel:'95%', is_playing:true, radar:[95,88,98,92,94], floor:75, ceil:170, pair_suggest:['Rohit Sharma', 'Hardik Pandya'], ml_score:95},
+            {id:10, name:'Gerald Coetzee', role:'BOWL', team:'MI', credits:8.0, points:480, sel:'65%', is_playing:true, radar:[78,75,85,78,80], floor:45, ceil:115, pair_suggest:['Jasprit Bumrah'], ml_score:81},
+            {id:11, name:'Piyush Chawla', role:'BOWL', team:'MI', credits:7.5, points:350, sel:'52%', is_playing:false, radar:[68,70,72,65,70], floor:30, ceil:90, pair_suggest:[], ml_score:69},
+            {id:12, name:'MS Dhoni', role:'WK', team:'CSK', credits:8.0, points:380, sel:'78%', is_playing:true, radar:[72,85,55,68,92], floor:40, ceil:105, pair_suggest:['Ravindra Jadeja'], ml_score:80},
+            {id:13, name:'Devon Conway', role:'WK', team:'CSK', credits:8.5, points:520, sel:'72%', is_playing:true, radar:[80,78,75,72,82], floor:50, ceil:125, pair_suggest:['Ruturaj Gaikwad'], ml_score:83},
+            {id:14, name:'Ruturaj Gaikwad', role:'BAT', team:'CSK', credits:9.0, points:680, sel:'87%', is_playing:true, radar:[85,82,88,80,85], floor:60, ceil:145, pair_suggest:['Ravindra Jadeja', 'Devon Conway'], ml_score:88},
+            {id:15, name:'Shivam Dube', role:'BAT', team:'CSK', credits:8.5, points:580, sel:'80%', is_playing:true, radar:[82,88,85,75,82], floor:55, ceil:135, pair_suggest:['Ravindra Jadeja'], ml_score:85},
+            {id:16, name:'Rajat Patidar', role:'BAT', team:'CSK', credits:7.5, points:420, sel:'58%', is_playing:false, radar:[70,72,68,62,75], floor:35, ceil:100, pair_suggest:[], ml_score:73},
+            {id:17, name:'Ravindra Jadeja', role:'AR', team:'CSK', credits:9.0, points:780, sel:'93%', is_playing:true, radar:[90,88,92,88,90], floor:70, ceil:160, pair_suggest:['Ruturaj Gaikwad', 'MS Dhoni'], ml_score:93},
+            {id:18, name:'Moeen Ali', role:'AR', team:'CSK', credits:8.0, points:450, sel:'62%', is_playing:true, radar:[75,78,72,70,78], floor:40, ceil:110, pair_suggest:['Ravindra Jadeja'], ml_score:77},
+            {id:19, name:'Matheesha Pathirana', role:'BOWL', team:'CSK', credits:8.5, points:690, sel:'82%', is_playing:true, radar:[88,75,95,85,82], floor:60, ceil:145, pair_suggest:['Ravindra Jadeja'], ml_score:86},
+            {id:20, name:'Deepak Chahar', role:'BOWL', team:'CSK', credits:8.0, points:480, sel:'68%', is_playing:true, radar:[78,72,82,78,80], floor:45, ceil:115, pair_suggest:[], ml_score:79},
+            {id:21, name:'Tushar Deshpande', role:'BOWL', team:'CSK', credits:7.5, points:380, sel:'55%', is_playing:false, radar:[68,65,75,70,72], floor:35, ceil:95, pair_suggest:[], ml_score:71},
             {id:22, name:'Tim David', role:'BAT', team:'MI', credits:8.0, points:520, sel:'70%', is_playing:true, radar:[82,85,88,72,80], floor:50, ceil:130, pair_suggest:['Suryakumar Yadav'], ml_score:82},
             {id:23, name:'Akash Madhwal', role:'BOWL', team:'MI', credits:7.0, points:320, sel:'48%', is_playing:true, radar:[65,68,72,65,70], floor:30, ceil:90, pair_suggest:[], ml_score:67},
             {id:24, name:'Ajinkya Rahane', role:'BAT', team:'CSK', credits:7.5, points:380, sel:'60%', is_playing:false, radar:[70,75,65,68,72], floor:35, ceil:100, pair_suggest:[], ml_score:74},
@@ -363,7 +327,7 @@ html_code = """
         window.onload = () => {
             allPlayers = [...allPlayersData];
             document.getElementById('pitchText').innerHTML = `
-                <b>Red Soil Paradise</b><br>High dew expected. Chasing favored.<br>
+                <b>Red Soil Paradise</b><br>High dew expected.<br>
                 <br><b>Avg Score:</b> 198 | <b>Toss:</b> CSK (Bat 2nd)
             `;
             renderPlayers();
@@ -398,12 +362,12 @@ html_code = """
                                 <div class="p-name">${p.name}</div>
                                 <div class="p-sub">
                                     <span class="playing-dot ${playingDot}"></span>
-                                    ${p.is_playing ? 'Playing' : 'Bench'} • ${p.sel} Sel • ${p.ml_score} AI
+                                    ${p.is_playing ? 'Play' : 'Bench'} • ${p.sel} • ${p.ml_score} AI
                                 </div>
                             </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="font-weight:800; font-size:15px; color: ${teamColor}">${p.credits}</div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="font-weight:800; font-size:14px; color: ${teamColor}">${p.credits}</div>
                             ${aiSuggest}
                             <div class="btn-add">${isSelected ? '−' : '+'}</div>
                         </div>
@@ -488,15 +452,14 @@ html_code = """
             if (myTeam.length > 0) {
                 const topPlayer = myTeam.reduce((max, p) => p.ml_score > max.ml_score ? p : max);
                 aiPanel.innerHTML = `
-                    <div style="text-align:center; margin-bottom:10px;">
-                        <div style="font-family:'Outfit'; font-weight:800; font-size:16px; color:var(--text-main);">${topPlayer.name}</div>
+                    <div style="text-align:center; margin-bottom:8px;">
+                        <div style="font-family:'Outfit'; font-weight:800; font-size:15px; color:var(--text-main);">${topPlayer.name}</div>
                         <div style="font-size:11px; color:var(--text-muted);">AI Score: <span style="color:var(--d11-green); font-weight:700;">${topPlayer.ml_score}</span></div>
                     </div>
                     <div class="dv-container" id="radarChart"></div>
                 `;
                 
-                // Keep radar responsive for mobile
-                let m = window.innerWidth < 768 ? 20 : 30;
+                let m = window.innerWidth < 768 ? 15 : 25;
                 Plotly.newPlot('radarChart', [{
                     type: 'scatterpolar', r: topPlayer.radar, 
                     theta: ['Form','Consist.','Stats','Venue','Matchup'],
@@ -537,10 +500,10 @@ html_code = """
                 list.innerHTML += `
                     <div class="cvc-row" onclick="showPlayerDetail(${p.id})">
                         <div>
-                            <div style="font-weight:700; font-size:14px;">${p.name} (${p.role})</div>
-                            <div style="font-size:11px; color:var(--text-muted);">${p.points}pts | ${p.sel}</div>
+                            <div style="font-weight:700; font-size:13px;">${p.name} (${p.role})</div>
+                            <div style="font-size:10px; color:var(--text-muted);">${p.points}pts | ${p.sel}</div>
                         </div>
-                        <div style="display:flex; gap:6px;">
+                        <div style="display:flex; gap:5px;">
                             <div class="circle-btn ${selectedC === p.id ? 'c-active' : ''}" onclick="selectC(${p.id});event.stopPropagation()">C</div>
                             <div class="circle-btn ${selectedVC === p.id ? 'vc-active' : ''}" onclick="selectVC(${p.id});event.stopPropagation()">VC</div>
                         </div>
@@ -607,6 +570,7 @@ html_code = """
 </html>
 """
 
-# HTML render using a fixed height for Streamlit.
-# 1000px ensures mobile vertical stacking has room, while desktop stays locked at 720px by the internal CSS.
-components.html(html_code, height=1000, scrolling=True)
+# Streamlit Component rendering the HTML edge-to-edge.
+# Setting a high, safe height (like 800) combined with CSS "height: 100vh; overflow: hidden;"
+# inside the iframe ensures a seamless fixed app window on Desktop and flex layout on Mobile.
+components.html(html_code, height=800, scrolling=False)
